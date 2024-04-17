@@ -1,5 +1,5 @@
-Stream<int> findPrimeNumbers(int count) async* {
-  int num = 1;
+Stream<int> findPrimeNumbers(int from, int count) async* {
+  int num = from;
   int found = 0;
 
   while (found < count) {

@@ -42,7 +42,7 @@ class IsolateTransformer {
           streamController.close();
           return;
         }
-        streamController.sink.add(event as S);
+        streamController.add(event as S);
       }, onDone: () {
         streamController.close();
       });

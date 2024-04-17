@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:example/src/prime/prime.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:isolate_transformer/isolate_transformer.dart';
 
@@ -15,23 +16,34 @@ class SampleItemDetailsView extends StatefulWidget {
 }
 
 class _SampleItemDetailsViewState extends State<SampleItemDetailsView> {
-  StreamController<int> numController = StreamController<int>();
-  StreamController<int> primeController = StreamController<int>();
-  int currentNumber = 1000;
+  final numController = StreamController<int>();
+  final primeController = StreamController<(int, int)>();
+  var currentPrime = 1;
+  var index = 0;
   @override
   void initState() {
     super.initState();
     IsolateTransformer()
         .transform(numController.stream,
-            (e) => e.asyncExpand((event) => findPrimeNumbers(event)))
+            (e) => e.asyncExpand((event) => findPrimeNumbers(event * 10, 100)))
         .listen((event) {
-      primeController.add(event);
+      currentPrime = event;
+      if (!primeController.isClosed) {
+        primeController.add((index++, event));
+      }
     });
   }
 
   void start() {
-    numController.add(currentNumber);
-    currentNumber *= 10;
+    index = 0;
+    numController.add(currentPrime);
+  }
+
+  @override
+  void dispose() {
+    numController.close();
+    primeController.close();
+    super.dispose();
   }
 
   @override
@@ -55,11 +67,17 @@ class _SampleItemDetailsViewState extends State<SampleItemDetailsView> {
                     );
                   }
                 }),
-            ElevatedButton(
-              onPressed: () {
-                start();
-              },
-              child: Text('start'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    start();
+                  },
+                  child: Text('start'),
+                ),
+                CircularProgressIndicator(),
+              ],
             ),
           ],
         ),
