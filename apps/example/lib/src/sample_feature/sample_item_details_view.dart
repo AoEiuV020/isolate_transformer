@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:example/src/prime/prime.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:isolate_transformer/isolate_transformer.dart';
 
