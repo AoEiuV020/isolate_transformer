@@ -24,8 +24,10 @@ class _SampleItemDetailsViewState extends State<SampleItemDetailsView> {
   void initState() {
     super.initState();
     IsolateTransformer()
-        .transform(numController.stream,
-            (e) => e.asyncExpand((event) => findPrimeNumbers(event * 10, 100)))
+        .transform(
+            numController.stream,
+            (e) => e.asyncExpand(
+                (event) => Prime().findPrimeNumbers(event * 10, 100)))
         .listen((event) {
       currentPrime = event;
       if (!primeController.isClosed) {
