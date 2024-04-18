@@ -4,6 +4,8 @@ import 'package:example/src/prime/prime.dart';
 import 'package:flutter/material.dart';
 import 'package:isolate_transformer/isolate_transformer.dart';
 
+import '../bean/count.dart';
+
 /// Displays detailed information about a SampleItem.
 class SampleItemDetailsView extends StatefulWidget {
   const SampleItemDetailsView({super.key});
@@ -14,6 +16,9 @@ class SampleItemDetailsView extends StatefulWidget {
   State<SampleItemDetailsView> createState() => _SampleItemDetailsViewState();
 }
 
+// 同样一个final对象， 放在State对象内就传不进isolate, 要放在顶层，
+final _count = CountWrapper(count: 100);
+
 class _SampleItemDetailsViewState extends State<SampleItemDetailsView> {
   final numController = StreamController<int>();
   final primeController = StreamController<(int, int)>();
@@ -23,11 +28,15 @@ class _SampleItemDetailsViewState extends State<SampleItemDetailsView> {
   @override
   void initState() {
     super.initState();
+    initIsolate();
+  }
+
+  void initIsolate() {
     isolateTransformer
         .transform(
             numController.stream,
             (e) => e.asyncExpand(
-                (event) => Prime().findPrimeNumbers(event * 10, 100)))
+                (event) => Prime().findPrimeNumbers(event * 10, _count.count)))
         .listen((event) {
       currentPrime = event;
       if (!primeController.isClosed) {
