@@ -17,12 +17,13 @@ class SampleItemDetailsView extends StatefulWidget {
 class _SampleItemDetailsViewState extends State<SampleItemDetailsView> {
   final numController = StreamController<int>();
   final primeController = StreamController<(int, int)>();
+  final isolateTransformer = IsolateTransformer();
   var currentPrime = 1;
   var index = 0;
   @override
   void initState() {
     super.initState();
-    IsolateTransformer()
+    isolateTransformer
         .transform(
             numController.stream,
             (e) => e.asyncExpand(
@@ -44,6 +45,7 @@ class _SampleItemDetailsViewState extends State<SampleItemDetailsView> {
   void dispose() {
     numController.close();
     primeController.close();
+    isolateTransformer.killAllIsolates();
     super.dispose();
   }
 

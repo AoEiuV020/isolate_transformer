@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:isolate';
 
 class IsolateTransformer {
+  final Set<Isolate> _cache = {};
   Future<T> convert<S, T>(S data, Stream<T> Function(Stream<S> e) mapper) {
     return transform<S, T>(Stream.value(data), mapper).first;
   }
@@ -21,7 +22,7 @@ class IsolateTransformer {
       return;
     }
     var mainReceive = ReceivePort();
-    await Isolate.spawn((SendPort sendPort) {
+    final isolate = await Isolate.spawn((SendPort sendPort) {
       final receivePort = ReceivePort();
       sendPort.send(receivePort.sendPort);
       final streamController = StreamController<S>();
@@ -50,9 +51,12 @@ class IsolateTransformer {
         // 这里注册监听异步线程内抛出的异常，
         onError: mainReceive.sendPort);
 
+    _cache.add(isolate);
     await for (var message in mainReceive) {
       if (message == mainReceive.sendPort) {
         // 这里把sendPort当成结束的标记使用，
+        isolate.kill(priority: Isolate.immediate);
+        _cache.remove(isolate);
         return;
       }
       if (message is SendPort) {
@@ -66,9 +70,19 @@ class IsolateTransformer {
       }
       // 这里是异步线程内抛出的异常，
       if (message is Error) {
+        isolate.kill(priority: Isolate.immediate);
+        _cache.remove(isolate);
         throw message;
       }
       yield message as T;
     }
+  }
+
+  // 关闭所有的 Isolate
+  void killAllIsolates() {
+    for (Isolate isolate in _cache) {
+      isolate.kill(priority: Isolate.immediate);
+    }
+    _cache.clear();
   }
 }
