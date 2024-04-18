@@ -1,9 +1,21 @@
+import 'package:flutter/material.dart';
+
 import '../bean/count.dart';
 
 class Prime {
   final _count = CountWrapper(count: 100);
-  Stream<int> transform(Stream<int> numStream) => numStream
-      .asyncExpand((event) => findPrimeNumbers(event * 10, _count.count));
+  int hash = 0;
+  int getHash() => this.hashCode;
+  void setHash() {
+    hash = getHash();
+  }
+
+  Stream<int> transform(Stream<int> numStream) =>
+      numStream.asyncExpand((event) {
+        debugPrint('hash=$hash, getHash=${getHash()}');
+        assert(hash != getHash());
+        return findPrimeNumbers(event * 10, _count.count);
+      });
   Stream<int> findPrimeNumbers(int from, int count) async* {
     int num = from;
     int found = 0;

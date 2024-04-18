@@ -29,8 +29,10 @@ class _SampleItemDetailsViewState extends State<SampleItemDetailsView> {
   }
 
   void initIsolate() {
+    final prime = Prime();
+    prime.setHash();
     isolateTransformer
-        .transform(numController.stream, Prime().transform)
+        .transform(numController.stream, prime.transform)
         .listen((event) {
       currentPrime = event;
       if (!primeController.isClosed) {
