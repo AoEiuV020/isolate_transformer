@@ -20,6 +20,7 @@ class _SampleItemDetailsViewState extends State<SampleItemDetailsView> {
   final numController = StreamController<int>();
   final primeController = StreamController<(int, int)>();
   final isolateTransformer = IsolateTransformer();
+  static final prime = Prime();
   var currentPrime = 1;
   var index = 0;
   @override
@@ -29,11 +30,10 @@ class _SampleItemDetailsViewState extends State<SampleItemDetailsView> {
   }
 
   void initIsolate() {
-    final prime = Prime();
     prime.setHash();
-    isolateTransformer
-        .transform(numController.stream, prime.transform)
-        .listen((event) {
+    isolateTransformer.transform(numController.stream, (e) {
+      return prime.transform(e);
+    }).listen((event) {
       currentPrime = event;
       if (!primeController.isClosed) {
         primeController.add((index++, event));
