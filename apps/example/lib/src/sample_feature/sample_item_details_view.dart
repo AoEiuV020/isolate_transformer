@@ -47,6 +47,7 @@ class _SampleItemDetailsViewState extends State<SampleItemDetailsView> {
   }
 
   void start() {
+    assert(prime.countWrapper.count == 100);
     index = 0;
     numController.add(currentPrime);
   }

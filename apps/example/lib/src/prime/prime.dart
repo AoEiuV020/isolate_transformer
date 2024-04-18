@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../bean/count.dart';
 
 class Prime {
-  final _count = CountWrapper(count: 100);
+  final countWrapper = CountWrapper(count: 100);
   int hash = 0;
   int getHash() => this.hashCode;
   void setHash() {
@@ -14,7 +14,7 @@ class Prime {
       numStream.asyncExpand((event) {
         debugPrint('hash=$hash, getHash=${getHash()}');
         assert(hash != getHash());
-        return findPrimeNumbers(event * 10, _count.count);
+        return findPrimeNumbers(event * 10, countWrapper.count);
       });
   Stream<int> findPrimeNumbers(int from, int count) async* {
     int num = from;
@@ -27,6 +27,7 @@ class Prime {
       }
       num++;
     }
+    countWrapper.count++;
   }
 
   int findMaxPrime(int n) {

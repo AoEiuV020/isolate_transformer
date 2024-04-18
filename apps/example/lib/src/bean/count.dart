@@ -1,5 +1,5 @@
 class CountWrapper {
-  final int count;
+  int count;
 
   CountWrapper({required this.count});
 }
