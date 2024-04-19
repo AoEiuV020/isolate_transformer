@@ -4,19 +4,17 @@ import 'package:example/src/prime/prime.dart';
 import 'package:flutter/material.dart';
 import 'package:isolate_transformer/isolate_transformer.dart';
 
-import '../bean/count.dart';
-
 /// Displays detailed information about a SampleItem.
-class SampleItemDetailsView extends StatefulWidget {
-  const SampleItemDetailsView({super.key});
+class PrimeCalcView extends StatefulWidget {
+  const PrimeCalcView({super.key});
 
-  static const routeName = '/sample_item';
+  static const routeName = '/prime_calc';
 
   @override
-  State<SampleItemDetailsView> createState() => _SampleItemDetailsViewState();
+  State<PrimeCalcView> createState() => _PrimeCalcViewState();
 }
 
-class _SampleItemDetailsViewState extends State<SampleItemDetailsView> {
+class _PrimeCalcViewState extends State<PrimeCalcView> {
   final numController = StreamController<int>();
   final primeController = StreamController<(int, int)>();
   final isolateTransformer = IsolateTransformer();
@@ -64,7 +62,7 @@ class _SampleItemDetailsViewState extends State<SampleItemDetailsView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Item Details'),
+        title: const Text('IsolateTransformer'),
       ),
       body: Center(
         child: Column(
