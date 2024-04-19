@@ -22,6 +22,7 @@ class _PrimeCalc2ViewState extends State<PrimeCalc2View> {
   final isolateTransformer = IsolateTransformer();
   final primeIsolate = IsolateManager.createOwnIsolate(
     findPrimeNumbersIsolateFunction,
+    workerName: "prime",
   );
   var currentPrime = 1;
   var index = 0;

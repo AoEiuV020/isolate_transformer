@@ -4,6 +4,7 @@ import 'package:isolate_manager/isolate_manager.dart';
 void findPrimeNumbersIsolateFunction(dynamic params) {
   final channel = IsolateManagerController<int, int>(params);
   findPrimeNumbersTransform(channel.onIsolateMessage).listen((message) {
+    // 这里sendResult会调用多次但主线程收到的数据只有第一个， 
     channel.sendResult(message);
   });
 }
