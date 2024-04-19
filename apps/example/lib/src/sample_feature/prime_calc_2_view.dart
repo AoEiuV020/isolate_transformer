@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:isolate_manager/isolate_manager.dart';
-import 'package:isolate_transformer/isolate_transformer.dart';
 
 import '../function/prime.dart';
 
@@ -19,7 +18,6 @@ class PrimeCalc2View extends StatefulWidget {
 class _PrimeCalc2ViewState extends State<PrimeCalc2View> {
   final numController = StreamController<int>();
   final primeController = StreamController<(int, int)>();
-  final isolateTransformer = IsolateTransformer();
   final primeIsolate = IsolateManager.createOwnIsolate(
     findPrimeNumbersIsolateFunction,
     workerName: "prime",
@@ -53,7 +51,7 @@ class _PrimeCalc2ViewState extends State<PrimeCalc2View> {
   void dispose() {
     numController.close();
     primeController.close();
-    isolateTransformer.killAllIsolates();
+    primeIsolate.stop();
     super.dispose();
   }
 
