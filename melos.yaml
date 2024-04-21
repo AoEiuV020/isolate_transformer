@@ -6,8 +6,12 @@ packages:
   - packages/**
 
 scripts:
-  worker2js:
+  worker2jsPrime:
     exec: cd web && dart compile js findPrimeNumbersTransform.dart -o findPrimeNumbersTransform.js -O4
+    packageFilters:
+      scope: 'example'
+  worker2jsFile:
+    exec: cd web && dart compile js fileReadTrunkTransform.dart -o fileReadTrunkTransform.js -O4
     packageFilters:
       scope: 'example'
 

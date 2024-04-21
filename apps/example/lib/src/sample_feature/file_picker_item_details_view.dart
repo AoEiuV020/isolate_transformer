@@ -17,7 +17,10 @@ class FilePickerItemDetailsView extends StatelessWidget {
   Stream<List<String>> getStream() async* {
     List<String> items = [];
     final stream = isolateTransformer.transform(
-        currentFile.readStream!, fileReadTrunkTransform);
+      currentFile.readStream!,
+      fileReadTrunkTransform,
+      workerName: 'fileReadTrunkTransform',
+    );
     await for (String str in stream) {
       items.add(str);
       yield items;
