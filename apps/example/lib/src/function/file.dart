@@ -1,19 +1,15 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:math' as math;
 
-import 'package:isolate_transformer/isolate_transformer.dart';
-
-
-class AsyncDecoder {
-  Stream<String> decode(Stream<List<int>> data) {
-    return IsolateTransformer().transform(
-        data,
-        (e) => e
-            .transform(const Utf8Decoder(allowMalformed: true))
-            .transform(const StringConverter()));
-  }
-}
+/// 异步执行的函数，
+///
+/// 放在顶层以免传递不必要的对象，
+///
+/// 声明entry-point以防万一被优化删除掉，
+@pragma('vm:entry-point')
+Stream<String> fileReadTrunkTransform(Stream<List<int>> e) => e
+    .transform(const Utf8Decoder(allowMalformed: true))
+    .transform(const StringConverter());
 
 class StringConverter extends Converter<String, String> {
   const StringConverter();

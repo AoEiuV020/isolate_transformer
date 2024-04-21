@@ -2,20 +2,23 @@ import 'dart:developer';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:isolate_transformer/isolate_transformer.dart';
 
-import '../file/decoder.dart';
+import '../function/file.dart';
 
 class FilePickerItemDetailsView extends StatelessWidget {
-  const FilePickerItemDetailsView(this.currentFile, {super.key});
+  FilePickerItemDetailsView(this.currentFile, {super.key});
 
   static const routeName = '/file_picker_item';
 
   final PlatformFile currentFile;
+  final isolateTransformer = IsolateTransformer();
 
   Stream<List<String>> getStream() async* {
-    final decoder = AsyncDecoder();
     List<String> items = [];
-    await for (String str in decoder.decode(currentFile.readStream!)) {
+    final stream = isolateTransformer.transform(
+        currentFile.readStream!, fileReadTrunkTransform);
+    await for (String str in stream) {
       items.add(str);
       yield items;
     }
