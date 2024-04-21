@@ -14,7 +14,19 @@ class IsolateTransformerImpl implements IsolateTransformer {
         final receivePort = ReceivePort();
         sendPort.send(receivePort.sendPort);
         final streamController = StreamController<S>();
-        mapper(streamController.stream).listen((event) {
+        final Stream<T> stream;
+        try {
+          stream = mapper(streamController.stream);
+        } catch (e, s) {
+          // 针对mapper本身不是async方法，同步执行时抛异常的情况，
+          if (e is Error || e is Exception) {
+            // 异常传到主线程再抛出，
+            sendPort.send(IsolateException(e, s));
+            return;
+          }
+          rethrow;
+        }
+        stream.listen((event) {
           sendPort.send(event);
         }, onDone: () {
           receivePort.close();
