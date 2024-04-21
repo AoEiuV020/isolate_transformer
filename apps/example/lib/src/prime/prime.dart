@@ -13,7 +13,6 @@ class Prime {
   Stream<int> transform(Stream<int> numStream) =>
       numStream.asyncExpand((event) {
         debugPrint('hash=$hash, getHash=${getHash()}');
-        assert(hash != getHash());
         assert(hash == 0);
         return findPrimeNumbers(event * 10, countWrapper.count);
       });
