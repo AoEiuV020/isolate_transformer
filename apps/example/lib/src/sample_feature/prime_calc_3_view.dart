@@ -16,7 +16,7 @@ class PrimeCalc3View extends StatefulWidget {
 
 class _PrimeCalc3ViewState extends State<PrimeCalc3View> {
   late StreamController<int> numController;
-  final primeController = StreamController<(int, int)>();
+  late StreamController<(int, int)> primeController;
   final isolateTransformer = IsolateTransformer();
   var currentPrime = 1;
   var index = 0;
@@ -27,6 +27,7 @@ class _PrimeCalc3ViewState extends State<PrimeCalc3View> {
   }
 
   void initIsolate() {
+    primeController = StreamController<(int, int)>();
     numController = StreamController<int>();
     isolateTransformer
         .transform(numController.stream, findPrimeNumbersTransform,
@@ -43,12 +44,21 @@ class _PrimeCalc3ViewState extends State<PrimeCalc3View> {
         // 一旦出现错误，后续就没了，只能reset新建一个numController和异步，
         primeController.addError(error, stackTrace);
       }
+    }, onDone: () {
+      if (!primeController.isClosed) {
+        // 一旦关闭StreamBuilder就完成了，无法恢复了，
+        primeController.close();
+      }
     });
   }
 
   void start() {
     index = 0;
     numController.add(currentPrime);
+  }
+
+  void end() {
+    numController.close();
   }
 
   void reset() async {
@@ -90,6 +100,8 @@ class _PrimeCalc3ViewState extends State<PrimeCalc3View> {
                   }
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Text('0');
+                  } else if (snapshot.connectionState == ConnectionState.done) {
+                    return Text('No more data');
                   } else {
                     return Text(
                       'prime number: ${snapshot.data}',
@@ -104,6 +116,12 @@ class _PrimeCalc3ViewState extends State<PrimeCalc3View> {
                     start();
                   },
                   child: Text('start'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    end();
+                  },
+                  child: Text('end'),
                 ),
                 ElevatedButton(
                   onPressed: () {
