@@ -1,3 +1,3 @@
 ## 1.0.0
 
-- Initial version.
+- 实现全平台异步线程处理Stream转换，
