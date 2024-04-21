@@ -12,7 +12,7 @@ class IsolateTransformerImpl implements IsolateTransformer {
   Stream<T> transform<S, T>(
       Stream<S> data, Stream<T> Function(Stream<S> e) mapper,
       {String workerName = ''}) async* {
-    if (workerName.isEmpty) {
+    if (workerName.isEmpty || !Worker.supported) {
       yield* mapper(data);
       return;
     }
