@@ -73,7 +73,7 @@ class IsolateTransformerImpl implements IsolateTransformer {
 
   // 关闭所有的 Isolate
   @override
-  void close() {
+  void killAll() {
     for (Isolate isolate in _cache) {
       isolate.kill(priority: Isolate.immediate);
     }

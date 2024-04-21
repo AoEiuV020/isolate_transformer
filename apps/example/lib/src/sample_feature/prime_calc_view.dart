@@ -57,7 +57,7 @@ class _PrimeCalcViewState extends State<PrimeCalcView> {
   void dispose() {
     numController.close();
     primeController.close();
-    isolateTransformer.close();
+    isolateTransformer.killAll();
     super.dispose();
   }
 

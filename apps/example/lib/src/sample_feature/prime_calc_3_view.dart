@@ -47,7 +47,7 @@ class _PrimeCalc3ViewState extends State<PrimeCalc3View> {
   void dispose() {
     numController.close();
     primeController.close();
-    isolateTransformer.close();
+    isolateTransformer.killAll();
     super.dispose();
   }
 

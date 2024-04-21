@@ -28,7 +28,7 @@ class IsolateTransformerImpl implements IsolateTransformer {
   }
 
   @override
-  void close() {
+  void killAll() {
     for (var worker in _cache) {
       worker.terminate();
     }
