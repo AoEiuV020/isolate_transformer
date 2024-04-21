@@ -2,6 +2,7 @@ import 'package:example/src/sample_feature/prime_calc_2_view.dart';
 import 'package:flutter/material.dart';
 
 import '../settings/settings_view.dart';
+import 'prime_calc_3_view.dart';
 import 'prime_calc_view.dart';
 import 'sample_item.dart';
 
@@ -9,7 +10,11 @@ import 'sample_item.dart';
 class SampleItemListView extends StatelessWidget {
   const SampleItemListView({
     super.key,
-    this.items = const [SampleItem(1), SampleItem(2), SampleItem(3)],
+    this.items = const [
+      SampleItem('不包含web'),
+      SampleItem('别人家的isolate_manager'),
+      SampleItem('IsolateTransformer'),
+    ],
   });
 
   static const routeName = '/';
@@ -20,7 +25,7 @@ class SampleItemListView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sample Items'),
+        title: const Text('异步计算质数'),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
@@ -51,12 +56,14 @@ class SampleItemListView extends StatelessWidget {
           final String route;
           if (index == 0) {
             route = PrimeCalcView.routeName;
-          } else {
+          } else if (index == 1) {
             route = PrimeCalc2View.routeName;
+          } else {
+            route = PrimeCalc3View.routeName;
           }
 
           return ListTile(
-              title: Text('SampleItem ${item.id}'),
+              title: Text(item.text),
               leading: const CircleAvatar(
                 // Display the Flutter Logo image asset.
                 foregroundImage: AssetImage('assets/images/flutter_logo.png'),

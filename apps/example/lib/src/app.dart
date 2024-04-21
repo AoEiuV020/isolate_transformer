@@ -3,6 +3,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'sample_feature/prime_calc_2_view.dart';
+import 'sample_feature/prime_calc_3_view.dart';
 import 'sample_feature/prime_calc_view.dart';
 import 'sample_feature/sample_item_list_view.dart';
 import 'settings/settings_controller.dart';
@@ -74,6 +75,8 @@ class MyApp extends StatelessWidget {
                     return const PrimeCalcView();
                   case PrimeCalc2View.routeName:
                     return const PrimeCalc2View();
+                  case PrimeCalc3View.routeName:
+                    return const PrimeCalc3View();
                   case SampleItemListView.routeName:
                   default:
                     return const SampleItemListView();

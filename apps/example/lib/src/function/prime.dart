@@ -9,6 +9,7 @@ void findPrimeNumbersIsolateFunction(dynamic params) {
   });
 }
 
+@pragma('vm:entry-point')
 Stream<int> findPrimeNumbersTransform(Stream<int> numStream) =>
     numStream.asyncExpand((event) {
       return findPrimeNumbers(event * 10, 100);

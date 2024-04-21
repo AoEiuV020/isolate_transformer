@@ -7,7 +7,7 @@ packages:
 
 scripts:
   worker2js:
-    exec: cd web && dart compile js prime_transformer.dart -o prime_transformer.js -O4
+    exec: cd web && dart compile js findPrimeNumbersTransform.dart -o findPrimeNumbersTransform.js -O4
     packageFilters:
       scope: 'example'
 

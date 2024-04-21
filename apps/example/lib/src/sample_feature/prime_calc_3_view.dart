@@ -1,25 +1,23 @@
 import 'dart:async';
 
-import 'package:example/src/prime/prime.dart';
-import 'package:flutter/foundation.dart';
+import 'package:example/src/function/prime.dart';
 import 'package:flutter/material.dart';
 import 'package:isolate_transformer/isolate_transformer.dart';
 
 /// Displays detailed information about a SampleItem.
-class PrimeCalcView extends StatefulWidget {
-  const PrimeCalcView({super.key});
+class PrimeCalc3View extends StatefulWidget {
+  const PrimeCalc3View({super.key});
 
-  static const routeName = '/prime_calc';
+  static const routeName = '/prime_calc_3';
 
   @override
-  State<PrimeCalcView> createState() => _PrimeCalcViewState();
+  State<PrimeCalc3View> createState() => _PrimeCalc3ViewState();
 }
 
-class _PrimeCalcViewState extends State<PrimeCalcView> {
+class _PrimeCalc3ViewState extends State<PrimeCalc3View> {
   final numController = StreamController<int>();
   final primeController = StreamController<(int, int)>();
   final isolateTransformer = IsolateTransformer();
-  static final prime = Prime();
   var currentPrime = 1;
   var index = 0;
   @override
@@ -29,15 +27,10 @@ class _PrimeCalcViewState extends State<PrimeCalcView> {
   }
 
   void initIsolate() {
-    prime.setHash();
-    isolateTransformer.transform(numController.stream, (e) {
-      /*
-      if (0 > 0) {
-        debugPrint(currentPrime.toString());
-      }
-      */
-      return prime.transform(e);
-    }).listen((event) {
+    isolateTransformer
+        .transform(numController.stream, findPrimeNumbersTransform,
+            workerName: 'findPrimeNumbersTransform')
+        .listen((event) {
       currentPrime = event;
       if (!primeController.isClosed) {
         primeController.add((index++, event));
@@ -46,9 +39,6 @@ class _PrimeCalcViewState extends State<PrimeCalcView> {
   }
 
   void start() {
-    if (!kIsWeb) {
-      assert(prime.countWrapper.count == 100);
-    }
     index = 0;
     numController.add(currentPrime);
   }
@@ -65,7 +55,7 @@ class _PrimeCalcViewState extends State<PrimeCalcView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('without web'),
+        title: const Text('IsolateTransformer'),
       ),
       body: Center(
         child: Column(

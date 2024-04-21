@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 import '../bean/count.dart';
 
@@ -13,7 +13,9 @@ class Prime {
   Stream<int> transform(Stream<int> numStream) =>
       numStream.asyncExpand((event) {
         debugPrint('hash=$hash, getHash=${getHash()}');
-        assert(hash == 0);
+        if (!kIsWeb) {
+          assert(hash == 0);
+        }
         return findPrimeNumbers(event * 10, countWrapper.count);
       });
   Stream<int> findPrimeNumbers(int from, int count) async* {
