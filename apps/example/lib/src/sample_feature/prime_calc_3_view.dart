@@ -37,6 +37,8 @@ class _PrimeCalc3ViewState extends State<PrimeCalc3View> {
         primeController.add((index++, event));
       }
     }, onError: (error, stackTrace) {
+      debugPrint(error.toString());
+      debugPrintStack(stackTrace: stackTrace);
       if (!primeController.isClosed) {
         // 一旦出现错误，后续就没了，只能reset新建一个numController和异步，
         primeController.addError(error, stackTrace);

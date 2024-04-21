@@ -3,6 +3,13 @@ import 'dart:isolate';
 
 import 'package:isolate_transformer/isolate_transformer.dart';
 
+class _IsolateException {
+  final dynamic error;
+  final StackTrace? stackTrace;
+
+  _IsolateException(this.error, this.stackTrace);
+}
+
 class IsolateTransformerImpl implements IsolateTransformer {
   final Set<Isolate> _cache = {};
 
@@ -24,10 +31,10 @@ class IsolateTransformerImpl implements IsolateTransformer {
       }, onDone: () {
         // 这里把sendPort当成结束的标记使用，
         sendPort.send(sendPort);
-      }, onError: (Object e, s) {
+      }, onError: (e, s) {
         if (e is Error || e is Exception) {
           // 异常传到主线程再抛出，
-          sendPort.send(e);
+          sendPort.send(_IsolateException(e, s));
         }
       });
       receivePort.listen((event) {
@@ -62,10 +69,12 @@ class IsolateTransformerImpl implements IsolateTransformer {
         continue;
       }
       // 这里是异步线程内抛出的异常，
-      if (message is Error || message is Exception) {
+      if (message is _IsolateException) {
+        final e = message.error;
         isolate.kill(priority: Isolate.immediate);
         _cache.remove(isolate);
-        throw message;
+        yield* Stream.error(e, message.stackTrace);
+        return;
       }
       yield message as T;
     }
