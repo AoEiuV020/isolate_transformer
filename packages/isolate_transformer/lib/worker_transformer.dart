@@ -1,10 +1,11 @@
 // ignore_for_file: avoid_web_libraries_in_flutter, depend_on_referenced_packages
 
 import 'dart:async';
-import 'dart:html' as html;
+import 'dart:html';
 import 'dart:js';
 
 import 'package:isolate_transformer/isolate_exception.dart';
+import 'package:isolate_transformer/isolate_stream_done.dart';
 import 'package:js/js_util.dart';
 import 'package:js/js.dart';
 
@@ -23,10 +24,7 @@ import 'package:js/js.dart';
 workerMain<S, T>(Stream<T> Function(Stream<S> e) mapper) {
   final Stream<T> stream;
   try {
-    stream = mapper(callbackToStream('onmessage', (html.MessageEvent e) {
-      final data = getProperty(e, 'data');
-      return dartify(data) as S;
-    }));
+    stream = mapper(callbackToStream('onmessage'));
   } catch (e, s) {
     // 针对mapper本身不是async方法，同步执行时抛异常的情况，
     if (e is Error || e is Exception) {
@@ -37,24 +35,34 @@ workerMain<S, T>(Stream<T> Function(Stream<S> e) mapper) {
     rethrow;
   }
 
-  stream.listen((message) async {
-    jsSendMessage(message);
-  }, onError: (e, s) {
-    if (e is Error || e is Exception) {
-      jsSendMessage(IsolateException(e, s).toJson());
-    }
-  });
+  stream.listen(
+    (message) async {
+      jsSendMessage(message);
+    },
+    onError: (e, s) {
+      if (e is Error || e is Exception) {
+        jsSendMessage(IsolateException(e, s).toJson());
+      }
+    },
+    onDone: () {
+      jsSendMessage(IsolateStreamDone().toJson());
+    },
+  );
 }
 
 Stream<Object> emptyTransformer<S, T>(Stream<Object> e) {
   return e;
 }
 
-Stream<T> callbackToStream<J, T>(
-    String name, T Function(J jsValue) unwrapValue) {
+Stream<T> callbackToStream<T>(String name) {
   var controller = StreamController<T>.broadcast(sync: true);
-  setProperty(context['self'], name, allowInterop((J event) {
-    controller.add(unwrapValue(event));
+  setProperty(context['self'], name, allowInterop((MessageEvent event) {
+    final data = dartify(getProperty(event, 'data'));
+    if (data is Map && data['type'] == 'IsolateStreamDone') {
+      controller.close();
+      return;
+    }
+    controller.add(data as T);
   }));
   return controller.stream;
 }

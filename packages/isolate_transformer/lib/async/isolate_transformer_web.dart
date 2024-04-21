@@ -2,6 +2,7 @@
 
 import 'dart:html';
 
+import 'package:isolate_transformer/isolate_stream_done.dart';
 import 'package:isolate_transformer/isolate_transformer.dart';
 
 import '../isolate_exception.dart';
@@ -18,9 +19,14 @@ class IsolateTransformerImpl implements IsolateTransformer {
     }
     final worker = Worker('$workerName.js');
     _cache.add(worker);
-    data.listen((event) {
-      worker.postMessage(event);
-    });
+    data.listen(
+      (event) {
+        worker.postMessage(event);
+      },
+      onDone: () {
+        worker.postMessage(IsolateStreamDone().toJson());
+      },
+    );
     await for (var event in worker.onMessage) {
       final data = event.data;
       // 这里是异步线程内抛出的异常，
@@ -33,6 +39,11 @@ class IsolateTransformerImpl implements IsolateTransformer {
           worker.terminate();
           _cache.remove(worker);
           yield* Stream.error(exception.error, exception.stackTrace);
+          return;
+        }
+        if (o is Map && o['type'] == 'IsolateStreamDone') {
+          worker.terminate();
+          _cache.remove(worker);
           return;
         }
         if (o != null) {
