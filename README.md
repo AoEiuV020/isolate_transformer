@@ -61,3 +61,7 @@ web支持： 可选参数workerName，即是上述js文件 findPrimeNumbersTrans
 ```dart
 isolateTransformer.killAll();
 ```
+
+## TODO
+- 示例读取文件大小为0会卡住，
+- 示例读取文件许多二进制文件卡住，
