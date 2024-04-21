@@ -1,22 +1,15 @@
 import 'dart:async';
 import 'dart:isolate';
 
-class IsolateTransformer {
+import 'package:isolate_transformer/isolate_transformer.dart';
+
+class IsolateTransformerImpl implements IsolateTransformer {
   final Set<Isolate> _cache = {};
-  Future<T> convert<S, T>(S data, Stream<T> Function(Stream<S> e) mapper) {
-    return transform<S, T>(Stream.value(data), mapper).first;
-  }
 
-  Future<T> run<S, T>(S data, Future<T> Function(S data) mapper) async {
-    return await transform<S, T>(
-        Stream.value(data),
-        (e) => e.asyncMap((event) async {
-              return await mapper(event);
-            })).first;
-  }
-
+  @override
   Stream<T> transform<S, T>(
-      Stream<S> data, Stream<T> Function(Stream<S> e) mapper) async* {
+      Stream<S> data, Stream<T> Function(Stream<S> e) mapper,
+      {String workerName = ''}) async* {
     if (const bool.fromEnvironment('dart.library.js_util')) {
       yield* mapper(data);
       return;
@@ -79,7 +72,8 @@ class IsolateTransformer {
   }
 
   // 关闭所有的 Isolate
-  void killAllIsolates() {
+  @override
+  void close() {
     for (Isolate isolate in _cache) {
       isolate.kill(priority: Isolate.immediate);
     }

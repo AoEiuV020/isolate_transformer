@@ -36,7 +36,7 @@ class _PrimeCalcViewState extends State<PrimeCalcView> {
       }
       */
       return prime.transform(e);
-    }).listen((event) {
+    }, workerName: 'prime_transformer').listen((event) {
       currentPrime = event;
       if (!primeController.isClosed) {
         primeController.add((index++, event));
@@ -54,7 +54,7 @@ class _PrimeCalcViewState extends State<PrimeCalcView> {
   void dispose() {
     numController.close();
     primeController.close();
-    isolateTransformer.killAllIsolates();
+    isolateTransformer.close();
     super.dispose();
   }
 
