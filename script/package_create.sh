@@ -7,4 +7,4 @@ if [ ! -d "$packages_dir" ]; then
     mkdir -p "$packages_dir"
 fi
 cd "$packages_dir"
-flutter create --template=package "$package_name"
+dart create --template=package "$package_name"
