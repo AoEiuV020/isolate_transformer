@@ -21,6 +21,7 @@ class _PrimeCalc2ViewState extends State<PrimeCalc2View> {
   final primeIsolate = IsolateManager.createOwnIsolate(
     findPrimeNumbersIsolateFunction,
     workerName: "prime",
+    isDebug: true,
   );
   var currentPrime = 1;
   var index = 0;
@@ -36,6 +37,10 @@ class _PrimeCalc2ViewState extends State<PrimeCalc2View> {
       if (!primeController.isClosed) {
         primeController.add((index++, event));
       }
+    }, onError: (error, stackTrace) {
+      if (!primeController.isClosed) {
+        primeController.addError(error, stackTrace);
+      }
     });
     numController.stream.listen((event) {
       primeIsolate.sendMessage(event);
@@ -45,6 +50,10 @@ class _PrimeCalc2ViewState extends State<PrimeCalc2View> {
   void start() {
     index = 0;
     numController.add(currentPrime);
+  }
+
+  void error() {
+    numController.add(-1);
   }
 
   @override
@@ -68,6 +77,10 @@ class _PrimeCalc2ViewState extends State<PrimeCalc2View> {
             StreamBuilder<Object>(
                 stream: primeController.stream,
                 builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    // 处理错误情况
+                    return Text('Error: ${snapshot.error}');
+                  }
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Text('0');
                   } else {
@@ -84,6 +97,12 @@ class _PrimeCalc2ViewState extends State<PrimeCalc2View> {
                     start();
                   },
                   child: Text('start'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    error();
+                  },
+                  child: Text('error'),
                 ),
                 CircularProgressIndicator(),
               ],

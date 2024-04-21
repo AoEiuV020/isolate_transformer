@@ -25,7 +25,7 @@ class IsolateTransformerImpl implements IsolateTransformer {
         // 这里把sendPort当成结束的标记使用，
         sendPort.send(sendPort);
       }, onError: (Object e, s) {
-        if (e is Error) {
+        if (e is Error || e is Exception) {
           // 异常传到主线程再抛出，
           sendPort.send(e);
         }
@@ -62,7 +62,7 @@ class IsolateTransformerImpl implements IsolateTransformer {
         continue;
       }
       // 这里是异步线程内抛出的异常，
-      if (message is Error) {
+      if (message is Error || message is Exception) {
         isolate.kill(priority: Isolate.immediate);
         _cache.remove(isolate);
         throw message;

@@ -36,6 +36,11 @@ class _PrimeCalc3ViewState extends State<PrimeCalc3View> {
       if (!primeController.isClosed) {
         primeController.add((index++, event));
       }
+    }, onError: (error, stackTrace) {
+      if (!primeController.isClosed) {
+        // 一旦出现错误，后续就没了，只能reset新建一个numController和异步，
+        primeController.addError(error, stackTrace);
+      }
     });
   }
 
@@ -49,6 +54,10 @@ class _PrimeCalc3ViewState extends State<PrimeCalc3View> {
     currentPrime = 1;
     index = 0;
     initIsolate();
+  }
+
+  void error() {
+    numController.add(-1);
   }
 
   @override
@@ -72,6 +81,11 @@ class _PrimeCalc3ViewState extends State<PrimeCalc3View> {
             StreamBuilder<Object>(
                 stream: primeController.stream,
                 builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    // 处理错误情况
+                    return Text(
+                        'Error: ${snapshot.error}\n${snapshot.stackTrace}');
+                  }
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Text('0');
                   } else {
@@ -94,6 +108,12 @@ class _PrimeCalc3ViewState extends State<PrimeCalc3View> {
                     reset();
                   },
                   child: Text('reset'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    error();
+                  },
+                  child: Text('error'),
                 ),
                 CircularProgressIndicator(),
               ],
