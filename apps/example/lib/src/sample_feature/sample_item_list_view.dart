@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../settings/settings_view.dart';
 import 'file_picker_item_details_view.dart';
+import 'map_list_view copy.dart';
 import 'prime_calc_3_view.dart';
 import 'prime_calc_view.dart';
 import 'sample_item.dart';
@@ -15,6 +16,7 @@ class SampleItemListView extends StatelessWidget {
       SampleItem('算质数-不包含web'),
       SampleItem('算质数-包含web'),
       SampleItem('读取文件'),
+      SampleItem('传入Map传出List'),
     ],
   });
 
@@ -76,6 +78,8 @@ class SampleItemListView extends StatelessWidget {
           final String route;
           if (index == 0) {
             route = PrimeCalcView.routeName;
+          } else if (index == 3) {
+            route = MapListView.routeName;
           } else {
             route = PrimeCalc3View.routeName;
           }
