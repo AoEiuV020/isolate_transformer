@@ -5,11 +5,6 @@ packages:
   - apps/**
   - packages/**
 
-command:
-  bootstrap:
-    hooks:
-      post: melos run gen --no-select
-
 scripts:
   gen:
     exec: dart run build_runner build --delete-conflicting-outputs
