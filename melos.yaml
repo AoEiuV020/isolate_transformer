@@ -6,6 +6,11 @@ packages:
   - packages/**
 
 scripts:
+  worker2js:
+    exec: cd web && dart compile js prime_transformer.dart -o prime_transformer.js -O4
+    packageFilters:
+      scope: 'example'
+
   gen:
     exec: dart run build_runner build --delete-conflicting-outputs
     packageFilters:
