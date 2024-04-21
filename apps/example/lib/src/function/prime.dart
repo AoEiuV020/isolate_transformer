@@ -1,3 +1,8 @@
+/// 异步执行的函数，
+/// 
+/// 放在顶层以免传递不必要的对象，
+/// 
+/// 声明entry-point以防万一被优化删除掉，
 @pragma('vm:entry-point')
 Stream<int> findPrimeNumbersTransform(Stream<int> numStream) =>
     numStream.asyncExpand((event) {
