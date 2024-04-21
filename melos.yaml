@@ -15,7 +15,7 @@ scripts:
     packageFilters:
       scope: 'example'
   worker2jsMap:
-    exec: cd web && dart compile js findPrimeNumbersListTransform.dart -o findPrimeNumbersListTransform.js
+    exec: cd web && dart compile js findPrimeNumbersListTransform.dart -o findPrimeNumbersListTransform.js -O4
     packageFilters:
       scope: 'example'
 
