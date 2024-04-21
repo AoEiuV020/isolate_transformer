@@ -1,14 +1,3 @@
-import 'package:isolate_manager/isolate_manager.dart';
-
-@pragma('vm:entry-point')
-void findPrimeNumbersIsolateFunction(dynamic params) {
-  final channel = IsolateManagerController<int, int>(params);
-  findPrimeNumbersTransform(channel.onIsolateMessage).listen((message) {
-    // 这里sendResult会调用多次但主线程收到的数据只有第一个，
-    channel.sendResult(message);
-  });
-}
-
 @pragma('vm:entry-point')
 Stream<int> findPrimeNumbersTransform(Stream<int> numStream) =>
     numStream.asyncExpand((event) {

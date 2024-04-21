@@ -14,7 +14,6 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  isolate_manager: ^4.1.5+1
   isolate_transformer:
   js: ^0.7.1
 

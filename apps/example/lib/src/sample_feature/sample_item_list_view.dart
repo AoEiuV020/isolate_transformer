@@ -1,4 +1,3 @@
-import 'package:example/src/sample_feature/prime_calc_2_view.dart';
 import 'package:flutter/material.dart';
 
 import '../settings/settings_view.dart';
@@ -11,9 +10,8 @@ class SampleItemListView extends StatelessWidget {
   const SampleItemListView({
     super.key,
     this.items = const [
-      SampleItem('不包含web'),
-      SampleItem('别人家的isolate_manager'),
-      SampleItem('IsolateTransformer'),
+      SampleItem('算质数-不包含web'),
+      SampleItem('算质数-包含web'),
     ],
   });
 
@@ -25,7 +23,7 @@ class SampleItemListView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('异步计算质数'),
+        title: const Text('异步测试'),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
@@ -56,8 +54,6 @@ class SampleItemListView extends StatelessWidget {
           final String route;
           if (index == 0) {
             route = PrimeCalcView.routeName;
-          } else if (index == 1) {
-            route = PrimeCalc2View.routeName;
           } else {
             route = PrimeCalc3View.routeName;
           }
