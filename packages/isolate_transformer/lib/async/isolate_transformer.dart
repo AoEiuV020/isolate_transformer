@@ -7,42 +7,6 @@ import 'package:isolate_transformer/isolate_transformer.dart';
 class IsolateTransformerImpl implements IsolateTransformer {
   final Set<Isolate> _cache = {};
 
-  /// 必须独立独立出来，
-  /// 否则mainReceive.close()会导致ReceivePort传进isolate中报错，有点奇怪，
-  void Function(SendPort) entry<S, T>(Stream<T> Function(Stream<S> e) mapper) =>
-      (SendPort sendPort) {
-        final receivePort = ReceivePort();
-        sendPort.send(receivePort.sendPort);
-        final streamController = StreamController<S>();
-        final Stream<T> stream;
-        try {
-          stream = mapper(streamController.stream);
-        } catch (e, s) {
-          // 针对mapper本身不是async方法，同步执行时抛异常的情况，
-          if (e is Error || e is Exception) {
-            // 异常传到主线程再抛出，
-            sendPort.send(IsolateException(e, s));
-            return;
-          }
-          rethrow;
-        }
-        stream.listen((event) {
-          sendPort.send(event);
-        }, onDone: () {
-          receivePort.close();
-        }, onError: (e, s) {
-          if (e is Error || e is Exception) {
-            // 异常传到主线程再抛出，
-            sendPort.send(IsolateException(e, s));
-          }
-        });
-        receivePort.listen((event) {
-          streamController.add(event as S);
-        }, onDone: () {
-          streamController.close();
-        });
-      };
-
   @override
   Stream<T> transform<S, T>(
       Stream<S> data, Stream<T> Function(Stream<S> e) mapper,
@@ -52,7 +16,7 @@ class IsolateTransformerImpl implements IsolateTransformer {
       return;
     }
     final mainReceive = ReceivePort();
-    final isolate = await Isolate.spawn(entry(mapper), mainReceive.sendPort,
+    final isolate = await Isolate.spawn(_entry(mapper), mainReceive.sendPort,
         // 这里注册监听异步线程内抛出的异常，
         onError: mainReceive.sendPort);
 
@@ -87,3 +51,40 @@ class IsolateTransformerImpl implements IsolateTransformer {
     _cache.clear();
   }
 }
+
+/// 顶层函数稳妥一点，避免误带入多余的对象，
+///
+/// 比如不独立出来会有mainReceive.close()导致ReceivePort传进isolate中报错，奇怪，
+void Function(SendPort) _entry<S, T>(Stream<T> Function(Stream<S> e) mapper) =>
+    (SendPort sendPort) {
+      final receivePort = ReceivePort();
+      sendPort.send(receivePort.sendPort);
+      final streamController = StreamController<S>();
+      final Stream<T> stream;
+      try {
+        stream = mapper(streamController.stream);
+      } catch (e, s) {
+        // 针对mapper本身不是async方法，同步执行时抛异常的情况，
+        if (e is Error || e is Exception) {
+          // 异常传到主线程再抛出，
+          sendPort.send(IsolateException(e, s));
+          return;
+        }
+        rethrow;
+      }
+      stream.listen((event) {
+        sendPort.send(event);
+      }, onDone: () {
+        receivePort.close();
+      }, onError: (e, s) {
+        if (e is Error || e is Exception) {
+          // 异常传到主线程再抛出，
+          sendPort.send(IsolateException(e, s));
+        }
+      });
+      receivePort.listen((event) {
+        streamController.add(event as S);
+      }, onDone: () {
+        streamController.close();
+      });
+    };
