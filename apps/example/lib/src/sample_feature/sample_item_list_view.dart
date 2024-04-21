@@ -1,6 +1,8 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import '../settings/settings_view.dart';
+import 'file_picker_item_details_view.dart';
 import 'prime_calc_3_view.dart';
 import 'prime_calc_view.dart';
 import 'sample_item.dart';
@@ -12,12 +14,32 @@ class SampleItemListView extends StatelessWidget {
     this.items = const [
       SampleItem('算质数-不包含web'),
       SampleItem('算质数-包含web'),
+      SampleItem('读取文件'),
     ],
   });
 
   static const routeName = '/';
 
   final List<SampleItem> items;
+
+  void openFileTest(BuildContext context) async {
+    var file = await pickFile();
+    if (file != null) {
+      if (!context.mounted) return;
+      Navigator.pushNamed(context, FilePickerItemDetailsView.routeName,
+          arguments: file);
+    }
+  }
+
+  Future<PlatformFile?> pickFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.any,
+      withData: false,
+      withReadStream: true,
+    );
+    if (result == null) return null;
+    return result.files.first;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,9 +87,10 @@ class SampleItemListView extends StatelessWidget {
                 foregroundImage: AssetImage('assets/images/flutter_logo.png'),
               ),
               onTap: () {
-                // Navigate to the details page. If the user leaves and returns to
-                // the app after it has been killed while running in the
-                // background, the navigation stack is restored.
+                if (index == 2) {
+                  openFileTest(context);
+                  return;
+                }
                 Navigator.restorablePushNamed(
                   context,
                   route,
