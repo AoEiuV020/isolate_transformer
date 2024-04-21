@@ -1,8 +1,5 @@
 library isolate_transformer;
 
-import 'dart:convert';
-import 'dart:io';
-
 import 'async/isolate_transformer.dart'
     if (dart.library.js_util) 'async/isolate_transformer_web.dart';
 
@@ -33,10 +30,5 @@ abstract class IsolateTransformer {
   /// kill会停止执行中的所有异步工作，
   /// 但IsolateTransformer对象本身不会失效，
   /// kill之后还是可以使用transform开启新的异步工作，
-  void killAll();
-}
-
-main() {
-  File f;
-  f.readAsLines()
+  Future<void> killAll();
 }

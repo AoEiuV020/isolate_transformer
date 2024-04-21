@@ -15,7 +15,7 @@ class PrimeCalc3View extends StatefulWidget {
 }
 
 class _PrimeCalc3ViewState extends State<PrimeCalc3View> {
-  final numController = StreamController<int>();
+  late StreamController<int> numController;
   final primeController = StreamController<(int, int)>();
   final isolateTransformer = IsolateTransformer();
   var currentPrime = 1;
@@ -27,6 +27,7 @@ class _PrimeCalc3ViewState extends State<PrimeCalc3View> {
   }
 
   void initIsolate() {
+    numController = StreamController<int>();
     isolateTransformer
         .transform(numController.stream, findPrimeNumbersTransform,
             workerName: 'findPrimeNumbersTransform')
@@ -41,6 +42,13 @@ class _PrimeCalc3ViewState extends State<PrimeCalc3View> {
   void start() {
     index = 0;
     numController.add(currentPrime);
+  }
+
+  void reset() async {
+    await isolateTransformer.killAll();
+    currentPrime = 1;
+    index = 0;
+    initIsolate();
   }
 
   @override
@@ -80,6 +88,12 @@ class _PrimeCalc3ViewState extends State<PrimeCalc3View> {
                     start();
                   },
                   child: Text('start'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    reset();
+                  },
+                  child: Text('reset'),
                 ),
                 CircularProgressIndicator(),
               ],

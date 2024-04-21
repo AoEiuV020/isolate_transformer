@@ -28,7 +28,7 @@ class IsolateTransformerImpl implements IsolateTransformer {
   }
 
   @override
-  void killAll() {
+  Future<void> killAll() async {
     for (var worker in _cache) {
       worker.terminate();
     }
