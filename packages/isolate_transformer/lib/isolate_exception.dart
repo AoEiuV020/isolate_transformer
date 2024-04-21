@@ -1,4 +1,5 @@
 /// 封装异步线程抛出的崩溃，
+///
 /// 在异步捕获崩溃得到IsolateException再抛到主线程，
 class IsolateException {
   final dynamic error;
@@ -26,7 +27,9 @@ class IsolateException {
 }
 
 /// 用于异常详细信息丢失了只拥有message字符串的情况，
+///
 /// 具体就是web端worker异步中的异常无法抛到主线程，所以只保留字符串，
+///
 /// 但往外抛抛时希望抛的是Exception而不是String以便一些判断处理，
 class MessageException implements Exception {
   final String message;

@@ -15,6 +15,10 @@ scripts:
     exec: dart run build_runner build --delete-conflicting-outputs
     packageFilters:
       dependsOn: build_runner
+  doc:
+    exec: dart doc .
+    packageFilters:
+      ignore: '*example*'
   analyze:
     exec: dart analyze .
   test:

@@ -4,9 +4,11 @@ import 'async/isolate_transformer.dart'
     if (dart.library.js_util) 'async/isolate_transformer_web.dart';
 
 /// 异步转换Stream，为了能在异步线程执行Stream.transform，
+///
 /// 因为一些费时处理不好封装成一进一出的异步函数，
 /// 可能是 N进M出 ，或者是希望每个输出都能及时在主线程接收处理，
 /// 比如，
+/// ```
 ///   File(filePath)
 ///       .openRead()
 ///       .transform(utf8.decoder)
@@ -14,8 +16,10 @@ import 'async/isolate_transformer.dart'
 ///       .forEach((line) {
 ///     print(line);
 ///   });
+/// ```
 /// 上述代码对比File.readAsLines不会一直等待直到全部读取解析完成，
 /// 但是这段代码包含transform无法简单改成异步线程实现，哪怕这在原生开发是很普遍的做法，
+///
 /// 此时就需要IsolateTransformer将transform封装到异步线程处理，
 abstract class IsolateTransformer {
   factory IsolateTransformer() => IsolateTransformerImpl();
