@@ -4,6 +4,8 @@ import 'dart:html';
 
 import 'package:isolate_transformer/isolate_transformer.dart';
 
+import '../isolate_exception.dart';
+
 class IsolateTransformerImpl implements IsolateTransformer {
   final Set<Worker> _cache = {};
   @override
@@ -21,6 +23,19 @@ class IsolateTransformerImpl implements IsolateTransformer {
     });
     await for (var event in worker.onMessage) {
       final data = event.data;
+      // 这里是异步线程内抛出的异常，
+      if (data is Map) {
+        // 魔法代码，不知道为什么是o，
+        final o = data['o'];
+        if (o is Map && o['type'] == 'IsolateException') {
+          final exception =
+              IsolateException.fromJson(Map<String, dynamic>.from(o));
+          worker.terminate();
+          _cache.remove(worker);
+          yield* Stream.error(exception.error, exception.stackTrace);
+          return;
+        }
+      }
       if (data is T) {
         yield data;
       }

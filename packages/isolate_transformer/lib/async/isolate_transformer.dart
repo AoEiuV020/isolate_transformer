@@ -1,14 +1,8 @@
 import 'dart:async';
 import 'dart:isolate';
 
+import 'package:isolate_transformer/isolate_exception.dart';
 import 'package:isolate_transformer/isolate_transformer.dart';
-
-class _IsolateException {
-  final dynamic error;
-  final StackTrace? stackTrace;
-
-  _IsolateException(this.error, this.stackTrace);
-}
 
 class IsolateTransformerImpl implements IsolateTransformer {
   final Set<Isolate> _cache = {};
@@ -34,7 +28,7 @@ class IsolateTransformerImpl implements IsolateTransformer {
       }, onError: (e, s) {
         if (e is Error || e is Exception) {
           // 异常传到主线程再抛出，
-          sendPort.send(_IsolateException(e, s));
+          sendPort.send(IsolateException(e, s));
         }
       });
       receivePort.listen((event) {
@@ -69,7 +63,7 @@ class IsolateTransformerImpl implements IsolateTransformer {
         continue;
       }
       // 这里是异步线程内抛出的异常，
-      if (message is _IsolateException) {
+      if (message is IsolateException) {
         final e = message.error;
         isolate.kill(priority: Isolate.immediate);
         _cache.remove(isolate);

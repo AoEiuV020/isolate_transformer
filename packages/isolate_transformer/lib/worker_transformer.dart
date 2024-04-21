@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:html' as html;
 import 'dart:js' as js;
 
+import 'package:isolate_transformer/isolate_exception.dart';
 import 'package:js/js_util.dart' as js_util;
 
 /// 用于worker,
@@ -19,6 +20,10 @@ workerMain<S, T>(Stream<T> Function(Stream<S> e) mapper) {
     return js_util.getProperty(e, 'data');
   })).listen((message) async {
     jsSendMessage(message);
+  }, onError: (e, s) {
+    if (e is Error || e is Exception) {
+      jsSendMessage(IsolateException(e, s).toJson());
+    }
   });
 }
 
@@ -36,5 +41,18 @@ Stream<T> callbackToStream<J, T>(
 }
 
 void jsSendMessage(dynamic m) {
+  if (m is Map) {
+    m = mapToJSObj(m);
+  }
   js.context.callMethod('postMessage', [m]);
+}
+
+Object mapToJSObj(Map<dynamic, dynamic> a) {
+  var object = js_util.newObject();
+  a.forEach((k, v) {
+    var key = k;
+    var value = v;
+    js_util.setProperty(object, key, value);
+  });
+  return object;
 }
