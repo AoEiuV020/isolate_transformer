@@ -16,9 +16,22 @@ import 'package:js/js_util.dart' as js_util;
 ///   workerMain(emptyTransformer);
 /// }
 workerMain<S, T>(Stream<T> Function(Stream<S> e) mapper) {
-  mapper(callbackToStream('onmessage', (html.MessageEvent e) {
-    return js_util.getProperty(e, 'data');
-  })).listen((message) async {
+  final Stream<T> stream;
+  try {
+    stream = mapper(callbackToStream('onmessage', (html.MessageEvent e) {
+      return js_util.getProperty(e, 'data');
+    }));
+  } catch (e, s) {
+    // 针对mapper本身不是async方法，同步执行时抛异常的情况，
+    if (e is Error || e is Exception) {
+      // 异常传到主线程再抛出，
+      jsSendMessage(IsolateException(e, s).toJson());
+      return;
+    }
+    rethrow;
+  }
+
+  stream.listen((message) async {
     jsSendMessage(message);
   }, onError: (e, s) {
     if (e is Error || e is Exception) {
