@@ -205,6 +205,7 @@ jobs:
           echo keyPassword=${{ secrets.KEY_PASSWORD }} >> key.properties
       - name: build
         run: |
+          mkdir build
           dart pub global activate melos
           melos bootstrap
           cd ${{ env.APP_DIR }}
