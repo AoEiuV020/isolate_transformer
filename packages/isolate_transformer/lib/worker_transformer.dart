@@ -2,10 +2,11 @@
 
 import 'dart:async';
 import 'dart:html' as html;
-import 'dart:js' as js;
+import 'dart:js';
 
 import 'package:isolate_transformer/isolate_exception.dart';
-import 'package:js/js_util.dart' as js_util;
+import 'package:js/js_util.dart';
+import 'package:js/js.dart';
 
 /// 用于worker,
 /// web真异步需要单独的js文件入口，该js可以是dart编译生成的，
@@ -23,7 +24,8 @@ workerMain<S, T>(Stream<T> Function(Stream<S> e) mapper) {
   final Stream<T> stream;
   try {
     stream = mapper(callbackToStream('onmessage', (html.MessageEvent e) {
-      return js_util.getProperty(e, 'data');
+      final data = getProperty(e, 'data');
+      return dartify(data) as S;
     }));
   } catch (e, s) {
     // 针对mapper本身不是async方法，同步执行时抛异常的情况，
@@ -51,25 +53,12 @@ Stream<Object> emptyTransformer<S, T>(Stream<Object> e) {
 Stream<T> callbackToStream<J, T>(
     String name, T Function(J jsValue) unwrapValue) {
   var controller = StreamController<T>.broadcast(sync: true);
-  js_util.setProperty(js.context['self'], name, js.allowInterop((J event) {
+  setProperty(context['self'], name, allowInterop((J event) {
     controller.add(unwrapValue(event));
   }));
   return controller.stream;
 }
 
 void jsSendMessage(dynamic m) {
-  if (m is Map) {
-    m = mapToJSObj(m);
-  }
-  js.context.callMethod('postMessage', [m]);
-}
-
-Object mapToJSObj(Map<dynamic, dynamic> a) {
-  var object = js_util.newObject();
-  a.forEach((k, v) {
-    var key = k;
-    var value = v;
-    js_util.setProperty(object, key, value);
-  });
-  return object;
+  context.callMethod('postMessage', [jsify(m)]);
 }

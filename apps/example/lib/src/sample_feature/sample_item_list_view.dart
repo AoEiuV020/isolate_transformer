@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../settings/settings_view.dart';
 import 'file_picker_item_details_view.dart';
-import 'map_list_view copy.dart';
+import 'map_list_view.dart';
 import 'prime_calc_3_view.dart';
 import 'prime_calc_view.dart';
 import 'sample_item.dart';

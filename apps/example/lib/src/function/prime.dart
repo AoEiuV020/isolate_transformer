@@ -9,11 +9,11 @@ Stream<int> findPrimeNumbersTransform(Stream<int> numStream) =>
       return findPrimeNumbers(event * 10, 100);
     });
 @pragma('vm:entry-point')
-Stream<List<int>> findPrimeNumbersListTransform(Stream<Map> numStream) =>
+Stream<List> findPrimeNumbersListTransform(Stream<Map> numStream) =>
     numStream.asyncExpand((event) {
-      int prime = event['prime'];
-      int count = event['count'];
-      int merge = event['merge'];
+      int prime = event['prime'] ?? -1;
+      int count = event['count'] ?? 100;
+      int merge = event['merge'] ?? 2;
       return mergeResult(findPrimeNumbers(prime * 10, count), merge);
     });
 

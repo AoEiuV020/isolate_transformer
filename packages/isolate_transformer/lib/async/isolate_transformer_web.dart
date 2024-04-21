@@ -35,6 +35,10 @@ class IsolateTransformerImpl implements IsolateTransformer {
           yield* Stream.error(exception.error, exception.stackTrace);
           return;
         }
+        if (o != null) {
+          yield o;
+          continue;
+        }
       }
       if (data is T) {
         yield data;
