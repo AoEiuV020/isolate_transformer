@@ -1,6 +1,8 @@
 # isolate_transformer
 flutter封装异步处理Stream流式数据，
 
+[![img](https://img.shields.io/github/release/AoEiuV020/isolate_transformer.svg)](https://github.com/AoEiuV020/isolate_transformer/releases)
+[![CI](https://github.com/AoEiuV020/isolate_transformer/workflows/CI/badge.svg)](https://github.com/AoEiuV020/isolate_transformer/actions)
 [![Using melos](https://img.shields.io/badge/maintained%20with-melos-f700ff.svg?style=flat-square)](https://github.com/invertase/melos)
 [![Main version](https://img.shields.io/pub/v/isolate_transformer.svg)](https://pub.dev/packages/isolate_transformer)
 
