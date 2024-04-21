@@ -211,7 +211,9 @@ jobs:
           cd ${{ env.APP_DIR }}
           flutter build ${{ matrix.config }} ${{ matrix.BUILD_ARGS }}
       - name: post
-        run: ${{ matrix.POST_COMMAND }}
+        run: |
+          cd ${{ env.APP_DIR }}/
+          ${{ matrix.POST_COMMAND }}
       - name: cname
         env:
           CNAME: ${{ secrets.CNAME }}
