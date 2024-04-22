@@ -40,6 +40,10 @@ class FilePickerItemDetailsView extends StatelessWidget {
               if (snapshot.hasError) {
                 return Text("${snapshot.error}");
               }
+              final done = snapshot.connectionState == ConnectionState.done;
+              if (done && !snapshot.hasData) {
+                return Text("empty ${currentFile.name}");
+              }
               if (!snapshot.hasData) {
                 return Text("loading ${currentFile.name}");
               }

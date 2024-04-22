@@ -63,5 +63,4 @@ isolateTransformer.killAll();
 ```
 
 ## TODO
-- 示例读取文件大小为0会卡住，
 - 示例读取文件许多二进制文件卡住，
