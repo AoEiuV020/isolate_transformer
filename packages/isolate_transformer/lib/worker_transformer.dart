@@ -44,7 +44,7 @@ workerMain<S, T>(Stream<T> Function(Stream<S> e) mapper) {
       }
     },
     onDone: () {
-      jsSendMessage(IsolateStreamDone().toJson());
+      jsSendMessage(const IsolateStreamDone().toJson());
     },
   );
 }
@@ -54,7 +54,7 @@ Stream<Object> emptyTransformer<S, T>(Stream<Object> e) {
 }
 
 Stream<T> callbackToStream<T>(String name) {
-  var controller = StreamController<T>.broadcast(sync: true);
+  var controller = StreamController<T>(sync: true);
   setProperty(context['self'], name, allowInterop((MessageEvent event) {
     final data = dartify(getProperty(event, 'data'));
     if (data is Map && data['type'] == 'IsolateStreamDone') {

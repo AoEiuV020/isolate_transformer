@@ -10,9 +10,7 @@ environment:
   sdk: '>=3.3.3 <4.0.0'
 
 dependencies:
-  file_picker:
-    git:
-      url: https://github.com/vito-go/flutter_file_picker.git
+  file_picker: ^7.0.0
   flutter:
     sdk: flutter
   flutter_localizations:

@@ -6,6 +6,11 @@ packages:
   - packages/**
 
 scripts:
+  worker2js:
+    steps:
+      - melos worker2jsPrime
+      - melos worker2jsFile
+      - melos worker2jsMap
   worker2jsPrime:
     exec: cd web && dart compile js findPrimeNumbersTransform.dart -o findPrimeNumbersTransform.js -O4
     packageFilters:

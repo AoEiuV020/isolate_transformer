@@ -24,7 +24,7 @@ class IsolateTransformerImpl implements IsolateTransformer {
         worker.postMessage(event);
       },
       onDone: () {
-        worker.postMessage(IsolateStreamDone().toJson());
+        worker.postMessage(const IsolateStreamDone().toJson());
       },
     );
     await for (var event in worker.onMessage) {
@@ -36,14 +36,12 @@ class IsolateTransformerImpl implements IsolateTransformer {
         if (o is Map && o['type'] == 'IsolateException') {
           final exception =
               IsolateException.fromJson(Map<String, dynamic>.from(o));
-          worker.terminate();
-          _cache.remove(worker);
+          _kill(worker);
           yield* Stream.error(exception.error, exception.stackTrace);
           return;
         }
         if (o is Map && o['type'] == 'IsolateStreamDone') {
-          worker.terminate();
-          _cache.remove(worker);
+          _kill(worker);
           return;
         }
         if (o != null) {
@@ -55,6 +53,11 @@ class IsolateTransformerImpl implements IsolateTransformer {
         yield data;
       }
     }
+  }
+
+  void _kill(Worker worker) {
+    worker.terminate();
+    _cache.remove(worker);
   }
 
   @override

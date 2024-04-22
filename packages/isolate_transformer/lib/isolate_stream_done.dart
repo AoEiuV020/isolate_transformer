@@ -1,10 +1,9 @@
 /// 用于标记Stream结束，
 ///
-/// 主要针对web端的Worker，
-/// 一方面传入的流无法关闭，
-/// 一方面异步worker内调用close外部也收不到结束事件，
+/// 数据传进异步线程这一步是无阻塞的，所以数据源的读取可能过快，
+/// 为避免提前关闭了异步线程，需要把
 class IsolateStreamDone {
-  IsolateStreamDone();
+  const IsolateStreamDone();
   Map<String, String> toJson() => const {
         'type': 'IsolateStreamDone',
       };

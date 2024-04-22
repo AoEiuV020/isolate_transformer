@@ -63,4 +63,4 @@ isolateTransformer.killAll();
 ```
 
 ## TODO
-- 示例读取文件许多二进制文件卡住，
+- 针对进出字节数组 List\<int\> or Uint8List 尽量避免复制，
