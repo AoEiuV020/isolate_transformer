@@ -38,7 +38,7 @@ class FilePickerItemDetailsView extends StatelessWidget {
             stream: getStream(),
             builder: (context, snapshot) {
               if (snapshot.hasError) {
-                return Text("${snapshot.error}");
+                return Text('Error: ${snapshot.error}\n${snapshot.stackTrace}');
               }
               final done = snapshot.connectionState == ConnectionState.done;
               if (done && !snapshot.hasData) {

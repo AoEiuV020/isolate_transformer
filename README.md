@@ -63,4 +63,3 @@ isolateTransformer.killAll();
 ```
 
 ## TODO
-- 针对进出字节数组 List\<int\> or Uint8List 尽量避免复制，

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:isolate';
+import 'dart:typed_data';
 
 import 'package:isolate_transformer/isolate_exception.dart';
 import 'package:isolate_transformer/isolate_stream_done.dart';
@@ -23,10 +24,11 @@ class IsolateTransformerImpl implements IsolateTransformer {
 
     _cache.add(isolate);
     await for (var message in mainReceive) {
+      message = _unwrapTransferable<T>(message);
       if (message is SendPort) {
         data.listen((event) {
           // 这里无阻塞，所以数据会渊源不断的读取，不管能不能处理完，
-          message.send(event);
+          message.send(_wrapTransferable<S>(event));
         }, onDone: () {
           // 这里不能直接把mainReceive给close掉，以防万一异步数据还没处理完，输入的数据就已经非阻塞读取完了，
           message.send(const IsolateStreamDone());
@@ -85,7 +87,7 @@ void Function(SendPort) _entry<S, T>(Stream<T> Function(Stream<S> e) mapper) =>
         rethrow;
       }
       stream.listen((event) {
-        sendPort.send(event);
+        sendPort.send(_wrapTransferable<T>(event));
       }, onDone: () {
         receivePort.close();
         sendPort.send(const IsolateStreamDone());
@@ -96,6 +98,7 @@ void Function(SendPort) _entry<S, T>(Stream<T> Function(Stream<S> e) mapper) =>
         }
       });
       receivePort.listen((event) {
+        event = _unwrapTransferable<S>(event);
         if (event is IsolateStreamDone) {
           streamController.close();
           return;
@@ -105,3 +108,26 @@ void Function(SendPort) _entry<S, T>(Stream<T> Function(Stream<S> e) mapper) =>
         streamController.close();
       });
     };
+
+dynamic _wrapTransferable<E>(event) {
+  if (event == null) return null;
+  // 如果本来就是TransferableTypedData，就不包装，
+  if (event is TransferableTypedData) return event;
+  if (event is Uint8List) {
+    // unwrap无法判断泛型<E>的类型，所以这里只支持Uint8List一种情况，
+    return TransferableTypedData.fromList([event]);
+  }
+  return event;
+}
+
+dynamic _unwrapTransferable<E>(event) {
+  if (event == null) return null;
+  // 如果没包装，就不拆包装，
+  if (event is E) return event;
+  if (event is TransferableTypedData) {
+    // 无法判断泛型<E>的类型，所以这里只支持Uint8List一种情况，
+    return event.materialize().asUint8List();
+  }
+  // unreachable,
+  return event;
+}
