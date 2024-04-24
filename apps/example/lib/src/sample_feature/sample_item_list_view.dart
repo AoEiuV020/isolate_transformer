@@ -1,3 +1,4 @@
+import 'package:example/src/sample_feature/byte_array_merge_view.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
@@ -17,6 +18,7 @@ class SampleItemListView extends StatelessWidget {
       SampleItem('算质数-包含web'),
       SampleItem('读取文件'),
       SampleItem('传入Map传出List'),
+      SampleItem('传递字节数组'),
     ],
   });
 
@@ -24,11 +26,20 @@ class SampleItemListView extends StatelessWidget {
 
   final List<SampleItem> items;
 
-  void openFileTest(BuildContext context) async {
+  void selectFileRead(BuildContext context) async {
     var file = await pickFile();
     if (file != null) {
       if (!context.mounted) return;
       Navigator.pushNamed(context, FilePickerItemDetailsView.routeName,
+          arguments: file);
+    }
+  }
+
+  void selectFileMerge(BuildContext context) async {
+    var file = await pickFile();
+    if (file != null) {
+      if (!context.mounted) return;
+      Navigator.pushNamed(context, ByteArrayMergeView.routeName,
           arguments: file);
     }
   }
@@ -78,10 +89,16 @@ class SampleItemListView extends StatelessWidget {
           final String route;
           if (index == 0) {
             route = PrimeCalcView.routeName;
+          } else if (index == 1) {
+            route = PrimeCalc3View.routeName;
+          } else if (index == 2) {
+            route = FilePickerItemDetailsView.routeName;
           } else if (index == 3) {
             route = MapListView.routeName;
+          } else if (index == 4) {
+            route = ByteArrayMergeView.routeName;
           } else {
-            route = PrimeCalc3View.routeName;
+            throw StateError('unknown item: $index');
           }
 
           return ListTile(
@@ -92,7 +109,10 @@ class SampleItemListView extends StatelessWidget {
               ),
               onTap: () {
                 if (index == 2) {
-                  openFileTest(context);
+                  selectFileRead(context);
+                  return;
+                } else if (index == 4) {
+                  selectFileMerge(context);
                   return;
                 }
                 Navigator.restorablePushNamed(

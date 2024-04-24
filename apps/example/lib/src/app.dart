@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'sample_feature/byte_array_merge_view.dart';
 import 'sample_feature/file_picker_item_details_view.dart';
 import 'sample_feature/map_list_view.dart';
 import 'sample_feature/prime_calc_3_view.dart';
@@ -79,6 +80,9 @@ class MyApp extends StatelessWidget {
                     return const PrimeCalc3View();
                   case MapListView.routeName:
                     return const MapListView();
+                  case ByteArrayMergeView.routeName:
+                    return ByteArrayMergeView(
+                        routeSettings.arguments as PlatformFile);
                   case FilePickerItemDetailsView.routeName:
                     return FilePickerItemDetailsView(
                         routeSettings.arguments as PlatformFile);
