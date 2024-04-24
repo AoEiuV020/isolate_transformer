@@ -19,10 +19,12 @@ class ByteArrayMergeView extends StatefulWidget {
 
 class _ByteArrayMergeViewState extends State<ByteArrayMergeView> {
   late StreamController<Uint8List> inputController;
-  late Stream<Uint8List> fileReadStream;
+  late StreamSplit<Uint8List> fileReadStreamSplit;
   final outputController = StreamController<Uint8List>();
   final isolateTransformer = IsolateTransformer();
   var count = 1;
+  var waitingCount = 0;
+
   @override
   void initState() {
     super.initState();
@@ -31,9 +33,8 @@ class _ByteArrayMergeViewState extends State<ByteArrayMergeView> {
 
   void initIsolate() {
     inputController = StreamController();
-    fileReadStream = widget.currentFile.readStream!
-        .map((event) => event is Uint8List ? event : Uint8List.fromList(event))
-        .asBroadcastStream();
+    fileReadStreamSplit = StreamSplit(widget.currentFile.readStream!.map(
+        (event) => event is Uint8List ? event : Uint8List.fromList(event)));
     isolateTransformer
         .transform(inputController.stream, byteArrayMergeTransform,
             workerName: 'byteArrayMergeTransform')
@@ -58,18 +59,8 @@ class _ByteArrayMergeViewState extends State<ByteArrayMergeView> {
 
   void start() async {
     log('start');
-    var c = count;
+    inputController.addStream(fileReadStreamSplit.take(count));
     count *= 2;
-    await for (var data in fileReadStream) {
-      log('controller add');
-      inputController.add(data);
-      --c;
-      if (c == 0) {
-        return;
-      }
-    }
-    log('controller done');
-    inputController.close();
   }
 
   void end() {
