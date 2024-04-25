@@ -73,13 +73,17 @@ class StreamSplit<T> {
   final Queue<Completer<void Function(T)>> _inputWaiters = Queue();
   final Queue<Completer<T>> _outputWaiters = Queue();
   var started = false;
+  var isDone = false;
 
   StreamSplit(this.stream);
 
   Stream<T> take(int count) async* {
     if (!started) {
-      asyncOperation(stream).listen((event) {});
+      startListen();
       started = true;
+    }
+    if (isDone) {
+      return;
     }
     for (var i = 0; i < count; i++) {
       try {
@@ -87,6 +91,17 @@ class StreamSplit<T> {
       } on _NoMoreError {
         return;
       }
+    }
+  }
+
+  void startListen() {
+    asyncOperation(stream).listen((event) {}, onDone: done, onError: error);
+  }
+
+  void error(e, s) {
+    isDone = true;
+    for (var output in _outputWaiters) {
+      output.completeError(e, s);
     }
   }
 
@@ -102,15 +117,24 @@ class StreamSplit<T> {
       callback.call(data);
       yield null;
     }
+    done();
+  }
+
+  void done() {
+    isDone = true;
     for (var output in _outputWaiters) {
       output.completeError(const _NoMoreError());
     }
+    _outputWaiters.clear();
   }
 
   Future<T> takeOne() {
     if (!started) {
-      asyncOperation(stream).listen((event) {});
+      startListen();
       started = true;
+    }
+    if (isDone) {
+      throw const _NoMoreError();
     }
     final completer = Completer<T>();
     if (_inputWaiters.isNotEmpty) {

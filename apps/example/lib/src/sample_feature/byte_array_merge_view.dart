@@ -57,10 +57,26 @@ class _ByteArrayMergeViewState extends State<ByteArrayMergeView> {
     });
   }
 
-  void start() async {
+  void start() {
     log('start');
-    inputController.addStream(fileReadStreamSplit.take(count));
+    transfer(count);
     count *= 2;
+  }
+
+  void transfer(int max) async {
+    var takeCount = 0;
+    try {
+      await for (var data in fileReadStreamSplit.take(max)) {
+        ++takeCount;
+        inputController.add(data);
+      }
+    } catch (e, s) {
+      inputController.addError(e, s);
+      return;
+    }
+    if (takeCount < max) {
+      inputController.close();
+    }
   }
 
   void end() {
