@@ -2,8 +2,8 @@
 
 import 'dart:async';
 
-import 'package:example/src/function/byte_array.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:stream_taker/stream_taker.dart';
 
 void main() {
   test('stream take multi times', () async {
@@ -58,9 +58,9 @@ void main() {
   });
   test('stream split', () async {
     List<int> list;
-    StreamSplit<int> streamSplit;
+    StreamTaker<int> streamSplit;
 
-    streamSplit = StreamSplit(createStream(5));
+    streamSplit = StreamTaker(createStream(5));
     list = await streamSplit.take(1).toList();
     expect([0], list);
     await Future.delayed(Duration(seconds: 1));

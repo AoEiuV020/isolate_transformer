@@ -16,6 +16,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   isolate_transformer:
+  stream_taker: ^1.0.0
 
 dev_dependencies:
   flutter_test:

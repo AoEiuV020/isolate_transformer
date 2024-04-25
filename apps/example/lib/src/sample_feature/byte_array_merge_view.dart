@@ -6,6 +6,7 @@ import 'package:example/src/function/byte_array.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:isolate_transformer/isolate_transformer.dart';
+import 'package:stream_taker/stream_taker.dart';
 
 class ByteArrayMergeView extends StatefulWidget {
   const ByteArrayMergeView(this.currentFile, {super.key});
@@ -19,7 +20,7 @@ class ByteArrayMergeView extends StatefulWidget {
 
 class _ByteArrayMergeViewState extends State<ByteArrayMergeView> {
   late StreamController<Uint8List> inputController;
-  late StreamSplit<Uint8List> fileReadStreamSplit;
+  late StreamTaker<Uint8List> fileReadStreamSplit;
   final outputController = StreamController<Uint8List>();
   final isolateTransformer = IsolateTransformer();
   var count = 1;
@@ -33,7 +34,7 @@ class _ByteArrayMergeViewState extends State<ByteArrayMergeView> {
 
   void initIsolate() {
     inputController = StreamController();
-    fileReadStreamSplit = StreamSplit(widget.currentFile.readStream!.map(
+    fileReadStreamSplit = StreamTaker(widget.currentFile.readStream!.map(
         (event) => event is Uint8List ? event : Uint8List.fromList(event)));
     isolateTransformer
         .transform(inputController.stream, byteArrayMergeTransform,
