@@ -11,6 +11,7 @@ scripts:
       - melos worker2jsPrime
       - melos worker2jsFile
       - melos worker2jsMap
+      - melos worker2jsByteArray
   worker2jsPrime:
     exec: cd web && dart compile js findPrimeNumbersTransform.dart -o findPrimeNumbersTransform.js -O4
     packageFilters:
@@ -21,6 +22,10 @@ scripts:
       scope: 'example'
   worker2jsMap:
     exec: cd web && dart compile js findPrimeNumbersListTransform.dart -o findPrimeNumbersListTransform.js -O4
+    packageFilters:
+      scope: 'example'
+  worker2jsByteArray:
+    exec: cd web && dart compile js byteArrayMergeTransform.dart -o byteArrayMergeTransform.js -O4
     packageFilters:
       scope: 'example'
 
