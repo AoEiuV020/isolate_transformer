@@ -63,3 +63,4 @@ isolateTransformer.killAll();
 ```
 
 ## TODO
+- 大量快速发送数据到异步线程还是会掉帧，
