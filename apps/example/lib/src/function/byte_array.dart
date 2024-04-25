@@ -36,6 +36,9 @@ class ByteArrayMergeSink implements Sink<Uint8List> {
   @override
   void add(Uint8List data) {
     log('input add: $exists/$count ${data.length}/$length');
+    if (data.isEmpty) {
+      throw StateError('data empty');
+    }
     length += data.length;
     buffer = mergeUintLists([buffer, data]);
     ++exists;

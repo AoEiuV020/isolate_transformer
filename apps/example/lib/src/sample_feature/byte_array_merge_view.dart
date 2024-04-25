@@ -115,6 +115,9 @@ class _ByteArrayMergeViewState extends State<ByteArrayMergeView> {
                         snapshot.connectionState == ConnectionState.done
                             ? 'done'
                             : 'waiting';
+                    if (data.isEmpty) {
+                      return Text('$status: 0');
+                    }
                     return Text(
                       '$status: ${data.length}, ${data.first.toRadixString(16).padLeft(2, '0')}..${data.last.toRadixString(16).padLeft(2, '0')}',
                     );
