@@ -1,6 +1,6 @@
 name: isolate_transformer
 description: Cross-platform asynchronous thread invocation of Stream transformation methods.
-version: 1.2.0
+version: 1.2.1
 repository: https://github.com/AoEiuV020/isolate_transformer/tree/main/packages/isolate_transformer
 
 environment:
