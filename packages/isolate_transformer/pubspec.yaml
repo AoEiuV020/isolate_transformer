@@ -6,8 +6,6 @@ repository: https://github.com/AoEiuV020/isolate_transformer
 environment:
   sdk: ^3.3.3
 
-dependencies:
-  js: ^0.7.1
 
 dev_dependencies:
   lints: ^3.0.0

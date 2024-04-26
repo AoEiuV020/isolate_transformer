@@ -3,10 +3,10 @@
 import 'dart:async';
 import 'dart:html';
 import 'dart:js';
+import 'dart:js_util';
 
 import 'package:isolate_transformer/isolate_exception.dart';
 import 'package:isolate_transformer/isolate_stream_done.dart';
-import 'package:js/js_util.dart';
 
 /// 用于worker,
 /// web真异步需要单独的js文件入口，该js可以是dart编译生成的，

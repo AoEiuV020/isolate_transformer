@@ -18,7 +18,7 @@ error和done都有处理，所以也可以用于一进一出的数据处理，
 ## Getting started
 
 ```shell
-dart pub add isolate_transformer dev:js
+dart pub add isolate_transformer
 ```
 
 ## Usage
