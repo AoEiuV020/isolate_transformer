@@ -40,6 +40,8 @@ class _ByteArrayMergeViewState extends State<ByteArrayMergeView> {
         .transform(inputController.stream, byteArrayMergeTransform,
             workerName: 'byteArrayMergeTransform')
         .listen((event) {
+      final receiveTime = DateTime.now().microsecondsSinceEpoch;
+      debugPrint("receiveTime: $receiveTime, length: ${event.length}");
       if (!outputController.isClosed) {
         outputController.add(event);
       }

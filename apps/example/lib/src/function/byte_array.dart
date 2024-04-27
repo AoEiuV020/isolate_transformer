@@ -43,6 +43,8 @@ class ByteArrayMergeSink implements Sink<Uint8List> {
     ++exists;
     if (exists == count) {
       log('output add: $exists/$count ${buffer.length}/$length');
+      final outputTime = DateTime.now().microsecondsSinceEpoch;
+      log("    outputTime: $outputTime, length: ${buffer.length}");
       sink.add(buffer);
       buffer = Uint8List(0);
       count *= 2;
