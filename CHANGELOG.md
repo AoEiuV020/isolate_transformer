@@ -1,3 +1,8 @@
+
+## 1.2.2
+
+- 放弃转换TransferableTypedData，
+
 ## 1.2.1
 
 - 修pub.dev上查看README.md，
