@@ -36,7 +36,7 @@ jobs:
               if [[ -x ./latest-changelog.sh ]]
               then
                   RELEASE_BODY=$(./latest-changelog.sh $BUILD_VERSION)
-                  TG_CHANGELOG=$(./latest-changelog.sh $BUILD_VERSION)
+                  TG_CHANGELOG=$RELEASE_BODY
               fi
               if [[ -z "$RELEASE_BODY" ]]
               then
@@ -389,3 +389,32 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           release_id: ${{ env.RELEASE_UPLAOD_ID }}
+
+  pub_dev_publish:
+    needs: [ release_publish ]
+    name: publish packages
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # This is required for requesting the JWT
+    steps:
+      - name: download custom env
+        uses: actions/download-artifact@v4
+        with:
+          name: custom_env
+      - name: apply custom env
+        run: |
+          cat .custom_env >> $GITHUB_ENV
+          rm .custom_env
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+      - name: 'Installs the Dart SDK and sets up the pipeline for usage with pub.dev (this sets up OIDC)'
+        uses: dart-lang/setup-dart@v1
+      - run: ./script/prepare.sh
+      - name: publish dry run
+        if: ${{ env.CREATE_RELEASE != 'true' }}
+        run: ./script/publish_dry_run.sh
+      - name: publish package
+        if: ${{ env.CREATE_RELEASE == 'true' }}
+        run: ./script/publish.sh
